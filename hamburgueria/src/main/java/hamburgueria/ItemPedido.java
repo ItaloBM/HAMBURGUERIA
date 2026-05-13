@@ -1,4 +1,6 @@
 package hamburgueria;
 
-public class ItemPedido {
+public interface ItemPedido {
+    double getPreco();
+    String getDescricao();
 }
