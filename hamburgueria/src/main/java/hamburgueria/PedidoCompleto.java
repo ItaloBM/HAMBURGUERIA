@@ -32,4 +32,15 @@ public class PedidoCompleto {
 
         public PedidoCompleto build() { return pedido; }
     }
+
+    public PedidoMemento salvarEstado() {
+        return new PedidoMemento(this.status);
+    }
+
+    public void restaurarEstado(PedidoMemento memento) {
+        this.status = memento.getStatusSalvo();
+        if(cliente != null) {
+            cliente.atualizar("Status desfeito! Pedido voltou para: " + status.getNomeStatus());
+        }
+    }
 }

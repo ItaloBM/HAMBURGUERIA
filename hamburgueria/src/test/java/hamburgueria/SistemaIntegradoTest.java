@@ -7,30 +7,36 @@ import static org.junit.jupiter.api.Assertions.*;
 class SistemaIntegradoTest {
 
     @BeforeEach
-    void setUp() {
-        CaixaSingleton.getInstancia().zerar();
-    }
+    void setUp() { CaixaSingleton.getInstancia().zerar(); }
 
     @Test
-    void deveExecutarTodosOs14PadroesJuntos() {
-        // 1. Observer e Decorator
-        ClienteObserver eu = new ClienteObserver("Italo");
-        ItemPedido lanche = new BaconExtra(new HamburguerBase()); // 25 + 5 = 30
+    void deveTestarVisitorEMementoIntegrados() {
+        // 1. Criando o lanche (Composite + Decorator)
+        ItemPedido lanche = new BaconExtra(new HamburguerBase());
 
-        // 2. Builder e Strategy
+        // VISITOR: Calculando calorias do lanche sem alterar regras de preço
+        CalculadoraCaloriasVisitor nutri = new CalculadoraCaloriasVisitor();
+        lanche.aceitar(nutri);
+        assertEquals(850, nutri.getCaloriasTotais()); // 600 base + 250 bacon
+
+        // 2. Criando pedido (Builder)
+        ClienteObserver eu = new ClienteObserver("Italo");
         PedidoCompleto pedido = new PedidoCompleto.Builder()
                 .setItens(lanche)
-                .setDesconto(new DescontoFidelidade()) // 10% de 30 = 27
+                .setDesconto(new SemDesconto())
                 .setCliente(eu)
                 .build();
 
-        // 3. Facade organiza o caos (usa Chain, Mediator, Template, State e Singleton)
-        HamburgueriaFacade sistema = new HamburgueriaFacade();
-        String resultado = sistema.processarPedido(pedido, new PreparoCarne());
+        // MEMENTO: Salvando estado atual ("Pendente")
+        HistoricoPedido historico = new HistoricoPedido();
+        historico.salvar(pedido);
 
-        // Validações de Sucesso:
-        assertEquals("Cozinha informa: Pão na chapa -> Hambúrguer grelhado ao ponto -> Embalado no papel kraft | Total pago: R$ 27.0", resultado);
-        assertEquals(27.0, CaixaSingleton.getInstancia().getSaldo());
+        // Avançando status indevidamente (State)
+        pedido.setStatus(new StatusPronto());
         assertEquals("Aviso para Italo: Pedido está agora: Pronto para Entrega", eu.getUltimoAviso());
+
+        // MEMENTO: Desfazendo o erro (Restaurando "Pendente")
+        historico.desfazer(pedido);
+        assertEquals("Aviso para Italo: Status desfeito! Pedido voltou para: Pendente", eu.getUltimoAviso());
     }
 }

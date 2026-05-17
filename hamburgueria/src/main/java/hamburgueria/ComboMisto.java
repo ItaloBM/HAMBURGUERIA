@@ -15,4 +15,11 @@ public class ComboMisto implements ItemPedido {
     public String getDescricao() {
         return "Combo com " + itens.size() + " itens";
     }
+
+    public void aceitar(ItemVisitor visitor) {
+        visitor.visitar(this);
+        for (ItemPedido item : itens) {
+            item.aceitar(visitor); // Repassa o visitante para os filhos
+        }
+    }
 }
