@@ -1,4 +1,6 @@
 package hamburgueria;
 
-public class IteradorCardapio {
+public interface IteradorCardapio {
+    boolean temProximo();
+    ItemCardapio proximo();
 }

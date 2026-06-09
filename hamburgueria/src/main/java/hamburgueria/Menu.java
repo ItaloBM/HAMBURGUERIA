@@ -1,4 +1,5 @@
 package hamburgueria;
 
-public class Menu {
+public interface Menu {
+    IteradorCardapio criarIterador();
 }
