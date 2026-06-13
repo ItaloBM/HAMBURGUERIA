@@ -1,4 +1,6 @@
 package hamburgueria;
 
-public class PedidoCozinha {
+public interface PedidoCozinha {
+    String getLanche();
+    boolean isParaEntregar();
 }
