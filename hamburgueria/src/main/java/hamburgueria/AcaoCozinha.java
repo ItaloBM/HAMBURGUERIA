@@ -1,4 +1,6 @@
 package hamburgueria;
 
-public class AcaoCozinha {
+public interface AcaoCozinha {
+    void executar();
+    void desfazer();
 }
